@@ -1,37 +1,32 @@
 \PassOptionsToPackage{utf8}{inputenc}
-\documentclass{bioinfo}
+\documentclass[a4paper]{article}
 \usepackage{natbib}
 \usepackage[hidelinks]{hyperref}
 \setcitestyle{round, author-year}
 
-\copyrightyear{2018} \pubyear{2018}
-\access{Advance Access Publication Date: Day Month Year}
-\appnotes{Original Paper}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{authblk}
 
 \begin{document}
-\firstpage{1}
-
-\subtitle{Sequence analysis}
-
-\title[PhyloMagnet]{PhyloMagnet: Fast and accurate screening of short-read meta-omics data using gene-centric phylogenetics}
-\author[Sch\"on et al.]{Max E. Sch\"on\,$^{\text{\sfb 1,}*}$, Laura Eme\,$^{\text{\sfb 1}}$, Thijs J.G. Ettema\,$^{\text{\sfb 1,2}}$}
-\address{$^{\text{\sf 1}}$Department of Cell and Molecular Biology, Science for Life Laboratory, Uppsala University, SE-75123 Uppsala, Sweden, $^{\text{\sf 2}}$Laboratory of Microbiology, Department of Agrotechnology and Food Sciences, Wageningen University, Stippeneng 4, 6708WE Wageningen, The Netherlands}
 
 
-\corresp{$^\ast$To whom correspondence should be addressed.}
+\title{PhyloMagnet: Fast and accurate screening of short-read meta-omics data using gene-centric phylogenetics}
 
-\history{Received on XXXXX; revised on XXXXX; accepted on XXXXX}
+\author[1]{Max E. Sch\"on}
+\author[1]{Laura Eme}
+\author[1,2]{Thijs J.G. Ettema}
+\affil[1]{Department of Cell and Molecular Biology, Science for Life Laboratory, Uppsala University, SE-75123 Uppsala, Sweden}
+\affil[2]{Laboratory of Microbiology, Department of Agrotechnology and Food Sciences, Wageningen University, Stippeneng 4, 6708WE Wageningen, The Netherlands}
+ 
+\maketitle
 
-\editor{Associate Editor: XXXXXXX}
 
-\abstract{\textbf{Motivation:} Metagenomic and metatranscriptomic sequencing have become increasingly popular tools for producing massive amounts of short-read data, often used for the reconstruction of draft genomes or the detection of (active) genes in microbial communities. Unfortunately, sequence assemblies of such datasets generally remain a computationally challenging task. Frequently, researchers are only interested in a specific group of organisms or genes; yet, the assembly of multiple datasets only to identify candidate sequences for a specific question is sometimes prohibitively slow, forcing researchers to select a subset of available datasets to address their question. Here we present PhyloMagnet, a workflow to screen meta-omics datasets for taxa and genes of interest using gene-centric assembly and phylogenetic placement of sequences.\\
+\parindent 0pt \textbf{Motivation:} Metagenomic and metatranscriptomic sequencing have become increasingly popular tools for producing massive amounts of short-read data, often used for the reconstruction of draft genomes or the detection of (active) genes in microbial communities. Unfortunately, sequence assemblies of such datasets generally remain a computationally challenging task. Frequently, researchers are only interested in a specific group of organisms or genes; yet, the assembly of multiple datasets only to identify candidate sequences for a specific question is sometimes prohibitively slow, forcing researchers to select a subset of available datasets to address their question. Here we present PhyloMagnet, a workflow to screen meta-omics datasets for taxa and genes of interest using gene-centric assembly and phylogenetic placement of sequences.\\
 \textbf{Results:} Using PhyloMagnet, we could identify up to 87\% of the genera in an \textit{in vitro} mock community with variable abundances, while the false positive predictions per single gene tree ranged from 0\% to 23\%. When applied to a group of metagenomes for which a set of MAGs have been published, we could detect the majority of the taxonomic labels that the MAGs had been annotated with. In a metatranscriptomic setting the phylogenetic placement of assembled contigs corresponds to that of transcripts obtained from transcriptome assembly.\\
 \textbf{Availability:} PhyloMagnet is built using Nextflow, available at \href{https://github.com/maxemil/PhyloMagnet}{github.com/maxemil/PhyloMagnet} and is developed and tested on Linux. It is released under the open source GNU GPL license and documentation is available at \href{https://phylomagnet.readthedocs.io/en/latest/}{phylomagnet.readthedocs.io}. Version 0.5 of PhyloMagnet was used for all benchmarking experiments.\\
 \textbf{Contact:} max-emil.schon@icm.uu.se\\
-\textbf{Supplementary information:} Supplementary data are available at \textit{Bioinformatics}
-online.}
 
-\maketitle
 
 \section{Introduction}
 High-throughput DNA sequencing has revolutionized biology, opening up new fields of research and enabling new fundamental insights in the life sciences. During the past decades, several sequencing technologies have been developed, each differing significantly in sequence read length, quality and throughput \citep{Mardis2017}. Applications comprise DNA shotgun sequencing as well as RNA sequencing of complex microbial communities, termed metagenomics and metatranscriptomics, respectively \citep{Mitchell2018}. 
@@ -54,7 +49,6 @@ The goals of the work presented here were to:
 \end{enumerate}
 
 
-\begin{methods}
 \section{Implementation}\label{implementation}
 PhyloMagnet exploits the idea of gene-centric assembly \citep{Huson2017} to efficiently screen sequence datasets  of short reads for target genes, and to taxonomically classify assembled gene sequences using phylogenetic placement. Below is a description of the analysis steps employed by the pipeline (see also Fig. \ref{fig:01}), which requires the following inputs: 
 \begin{enumerate}
@@ -70,7 +64,7 @@ For each input group of reference sequences a multiple sequence alignment is com
 Identifiers from the EggNOG database, containing orthologous groups of protein sequences from all domains of life with functional annotations \citep{Huerta-cepas2016b}, can be specified to be used as input reference sequences. Alternatively, sets of homologous protein sequences curated by the user in FASTA format can be used. In order to check for the potential presence of homologs encoding these proteins of interest in the query metagenomes or metatranscriptomes, each of the short-read datasets given as input (see \ref{implementation}.a above) is then aligned to the collection of reference protein sequences using the DIAMOND aligner in blastX mode \citep[Fig. \ref{fig:01}:2;][]{Buchfink2014}.
 
 \begin{figure*}[!tpb]
-\centerline{\includegraphics[width=.45\textwidth]{Fig1.pdf}}
+\centerline{\includegraphics[width=.9\textwidth]{Fig1.pdf}}
 \caption{Illustration of the main steps in the PhyloMagnet workflow. (1) The required input is a dataset of short reads. (2) These reads are aligned against the complete set of protein references (blastX). (3) Using the protein alignments, homologous gene sequences are reconstructed for all groups of reference proteins. (4) The contigs are added to the reference protein alignments (5) and are subsequently placed onto the reference phylogenetic tree. (6) The results of the placement are summarized and the classification is visualized.}\label{fig:01}
 \end{figure*}
 
@@ -109,7 +103,6 @@ We compared the performance of PhyloMagnet with that of the recently published t
 We created GraftM reference packages (gpkgs; containing the reference alignment, tree and the taxonomic annotation) from each of the extended rp16 references using the create command (see supplementary methods). We then used each gpkg to analyse the MBARC-26 dataset and recovered taxonomic classifications of the query sequences.
 For both tools, we counted the number of genera that were correctly identified in each tree (true positives) as well as the number of genera that were identified even though they were not present in the MBARC-26 mock community (false positives). We also assessed the runtime and memory consumption of both tools for analysis of the full MBARC-26 dataset (50 Gb) as well as for subsamples of 1\% and 10\% (0.5 and 5 Gb, respectively).
 
-\end{methods}
 
 \section{Results}\label{results}
 \subsection{Classification of ribosomal proteins in the MBARC-26 dataset}
@@ -119,7 +112,7 @@ When comparing results for the full dataset and the subsampled datasets, PhyloMa
 In terms of runtime, PhyloMagnet is twice as fast as GraftM when using 10 threads, making more efficient use of available computational resources. It uses, however, significantly more memory due to the requirements of MEGAN that performs the memory intensive sequence assembly, which GraftM does not include (see Fig. \ref{fig:S1}).
 
 \begin{figure*}[!tpb]%figure1
-\centerline{\includegraphics[width=.45\textwidth]{Fig2.pdf}}
+\centerline{\includegraphics[width=.7\textwidth]{Fig2.pdf}}
 \caption{Classification results of PhyloMagnet and GraftM on the MBARC-26 dataset. True positive and false positive (on the negative y-axis including zero) values are shown for both PhyloMagnet (blue circles) and GraftM (red triangles) and for each reference OG (x-axis). The 3 different dataset sizes are shown by lighter (1\%), middle (10\%) and darker (full dataset) shades of the respective color.} \label{fig:02}
 \end{figure*}
 
@@ -130,7 +123,7 @@ To further compare the performance of PhyloMagnet with that of a k-mer based met
 The PhyloMagnet workflow could identify 65 taxa (families) over the 8 datasets and 16 reference trees, whereof 21 were found in at least 4 trees for at least one dataset (Fig. \ref{fig:03}). These taxa cover all but one of the taxonomic groups for which genomic bins could be identified by \citet[][marked with an asterisk in Fig. \ref{fig:03}]{Delmont2018}. Most noticeable, the authors of that study recovered 6 non-redundant high-quality MAGs for the family Flavobacteriaceae which could be identified in every single tree for each dataset here as well. Further, the original authors identified one MAG each within the Alteromonadaceae, the Rickettsiales and the Alphaproteobacteria as well as two within Gammaproteobacteria. All of these taxonomic groups were detected by PhyloMagnet except for the Rickettsiales, who could have been misidenfied as Pelagibacterales in the phylogenetic placement. Alternatively, the genomic bins could have been mislabelled as Rickettsiales and actually belong to the Pelagibacterales, as those two lineages commonly artifactually branch together in phylogenetic trees due to convergent genome streamlining resulting in a similar sequence composition bias \citep{Roger2017,Martijn2018,Rodriguez-Ezpeleta2012,Viklund2013}. It is very likely that the MAGs that were labelled as Gammaproteobacteria by \citet{Delmont2018} are actually members of the Piscirickettsiaceae or Porticoccaceae, which were both detected by PhyloMagnet in several individual datasets and the majority of single gene trees. Here, we also recovered the additional taxonomic labels (Porticoccaceae, Rhodobacteraceae, Pelagibacteraceae, Cryomorphaceae) that could be assigned to raw genomic bins (which were not included in the original analyses as they did not pass quality and/or completeness thresholds) from the same study (Table \ref{tab:S2}). Some of the labels we recovered were not represented by any MAGs/Bins, indicating either false positive classification of contigs or a low abundance of the genomic DNA, such that no genome bins could be reconstructed by \citet{Delmont2018}.
 
 \begin{figure*}[!tpb]%figure1
-\centerline{\includegraphics[width=.45\textwidth]{Fig3.pdf}}
+\centerline{\includegraphics[width=.7\textwidth]{Fig3.pdf}}
 \caption{Classification results of the Tara Southern Oceans datasets. The heatmap on the right shows the identified taxa for each of the eight datasets, and only taxa which could be identified in at least four trees in at least one dataset are shown. For each combination of dataset and taxon, the value represents the number of trees a sequence from that dataset has been labelled with this taxon name. On the left a taxonomic tree (as defined by the ncbi taxonomy database) showing the relationship of lineages is depicted. Lineages represented by non-redundant and raw bins from \citet{Delmont2018} are marked with an asterisk.}\label{fig:03}
 \end{figure*}
 
@@ -138,7 +131,7 @@ The PhyloMagnet workflow could identify 65 taxa (families) over the 8 datasets a
 Using PhyloMagnet contigs were reconstructed from the pooled coral bleaching dataset of \citet{Frazier2017}. Using the Phylogenetic placement workflow, contigs classified as Symbiodiniaceae could be identified in 10 out of the 12 chloroplast gene reference trees. The number of contigs that were reconstructed for each gene from the pooled sequencing data of 23 datasets ranged from 2 (\textit{psb}E) to as many as 169 (\textit{psb}A), whereas we could identify either one or two transcripts from the corresponding published transcriptome assembly for 9 out of the 12 genes. The two genes for which no contigs could be reconstructed were \textit{psb}I and \textit{pet}D, both missing in the assembled transcriptome as well, which is likely due to two distinct issues. First, the \textit{psb}I gene is only around 30 amino acid residues long, making contigs shorter than the default length cut-off of 200bp implemented in the gene-centric assembler. Besides, \textit{psb}I has never been identified, experimentally or computationally, in any \textit{Symbiodinium} species, but the identification within the Dinophyceae comes from the species \textit{Amphidinium operculatum} \citep{Nisbet2004,Barbrook2014}. Second, it seems that the transcription level of \textit{pet}D is quite low, so that very few reads would have been sequenced, making assembly of contigs or transcripts virtually impossible \citep{Nisbet2008}. In those cases where transcripts could be identified, they were generally placed on the same branches or very close within the reference tree as were all of the corresponding contigs (Fig. \ref{fig:04}).
 
 \begin{figure*}[!tpb]%figure1
-\centerline{\includegraphics[width=.6\textwidth]{Fig4.pdf}}
+\centerline{\includegraphics[width=.9\textwidth]{Fig4.pdf}}
 \caption{Phylogenetic placement of contigs and transcripts. As an example of the coral bleaching metatranscriptome analyses, the tree of the plastid gene \textit{psb}B is shown. The sequences reconstructed by PhyloMagnet (left) and the assembled and quality-filtered transcripts from \citet[][right]{Frazier2017} were placed onto the reference tree. All sequences were placed on branches sister to two \textit{Symbiodinium} sequences (U6EFR9 and A0A0A0N1X1).}\label{fig:04}
 \end{figure*}
 
@@ -162,35 +155,52 @@ MES is funded by the Horizon 2020 research and innovation program under the Mari
 \bibliographystyle{bioinformatics}
 \bibliography{PM.bib}
 
-\newpage
 
 \renewcommand\thefigure{S\arabic{figure}}
 \setcounter{figure}{0}    
 
 \begin{figure}[!t]
-\caption{}\label{fig:S1}
+    \resizebox{!}{0cm}{
+    \begin{minipage}{\textwidth}
+    \caption{}\label{fig:S1}
+     \end{minipage}}
 \end{figure}
 
 \begin{figure}[!t]
+    \resizebox{!}{0cm}{
+    \begin{minipage}{\textwidth}
 \caption{}\label{fig:S2}
+     \end{minipage}}
 \end{figure}
 
 \begin{figure}[!t]
+    \resizebox{!}{0cm}{
+    \begin{minipage}{\textwidth}
 \caption{}\label{fig:S3}
+     \end{minipage}}
 \end{figure}
 
 \begin{figure}[!t]
+    \resizebox{!}{0cm}{
+    \begin{minipage}{\textwidth}
 \caption{}\label{fig:S4}
+     \end{minipage}}
 \end{figure}
 \renewcommand\thetable{S\arabic{table}}
 \setcounter{table}{0}    
 
 \begin{table}[!t]
+    \resizebox{!}{0cm}{
+    \begin{minipage}{\textwidth}
 \caption{}\label{tab:S1} 
+     \end{minipage}}
 \end{table}
 
 \begin{table}[!t]
+    \resizebox{!}{0cm}{
+    \begin{minipage}{\textwidth}
 \caption{}\label{tab:S2} 
+     \end{minipage}}
 \end{table}
 
 \end{document}
